@@ -32,19 +32,23 @@ async function atualizarNoticias() {
 
         // Fazer a requisição à API externa (NewsAPI)
         const response = await axios.get(url);
+
+        if (response.data.status !== 'ok') {
+            throw new Error('Falha ao buscar notícias.');
+        }
+
         const articles = response.data.articles;
 
         // Criar uma estrutura simplificada para as notícias
         noticiasCache = articles.slice(0, 5).map(article => ({
-            link: article.url,
-            titulo: article.title,
-            descricao: article.description,
-            img: article.urlToImage
+            link: article.url || 'URL não disponível',
+            titulo: article.title || 'Título não disponível',
+            descricao: article.description || 'Descrição não disponível',
+            img: article.urlToImage || 'Imagem não disponível'
         }));
-
-        console.log('Notícias atualizadas com sucesso.');
     } catch (error) {
         console.error('Erro ao atualizar as notícias:', error);
+        noticiasCache = []; // Limpar o cache em caso de erro
     }
 }
 
