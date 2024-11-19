@@ -9,8 +9,14 @@ configDotenv();
 // Criar o app Express
 const app = express();
 
+const corsOptions = {
+    origin: '*', // Permitir qualquer origem
+    methods: 'GET', // Permitir apenas GET, ou outros métodos conforme necessário
+    allowedHeaders: 'Content-Type, Authorization', // Permitir cabeçalhos específicos
+};
+
 // Configurar CORS (se necessário para o seu front-end)
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Definir a porta
 const PORT = process.env.PORT || 3000;
