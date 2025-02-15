@@ -32,7 +32,14 @@ async function atualizarNoticias() {
         const items = result.rss.channel.item;
 
         noticiasCache = items.slice(0, 5).map(item => {
-            const descricaoLimpa = item.description.replace(/<img[^>]*>/g, '').replace(/<a[^>]*>.*?<\/a>/g, '').trim();
+            const descricaoLimpa = item.description
+                .replace(/<img[^>]*>/g, '') // Remove imagens
+                .replace(/<a[^>]*>.*?<\/a>/g, '') // Remove links
+                .replace(/<br\s*\/?>/g, '') // Remove quebras de linha
+                .replace(/<p>/g, '') // Remove abertura de parágrafos
+                .replace(/<\/p>/g, '') // Remove fechamento de parágrafos
+                .trim();
+
             return {
                 link: item.link || 'URL não disponível',
                 titulo: item.title || 'Título não disponível',
