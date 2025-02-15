@@ -23,7 +23,7 @@ let noticiasCache = [];
 
 async function atualizarNoticias() {
     try {
-        const url = 'https://www.contabeis.com.br/rss/conteudo'; // URL da nova API RSS
+        const url = 'https://www.contabeis.com.br/rss/'; // URL da nova API RSS
         const response = await axios.get(url, { responseType: 'text' });
 
         const parser = new xml2js.Parser({ trim: true, explicitArray: false });
@@ -31,13 +31,16 @@ async function atualizarNoticias() {
         
         const items = result.rss.channel.item;
 
-        noticiasCache = items.slice(0, 5).map(item => ({
-            link: item.link || 'URL não disponível',
-            titulo: item.title || 'Título não disponível',
-            descricao: item.description || 'Descrição não disponível',
-            img: item["media:content"]?.$.url || 'Imagem não disponível',
-            data: item.pubDate || 'Data não disponível'
-        }));
+        noticiasCache = items.slice(0, 5).map(item => {
+            const descricaoLimpa = item.description.replace(/<img[^>]*>/g, '').replace(/<a[^>]*>.*?<\/a>/g, '').trim();
+            return {
+                link: item.link || 'URL não disponível',
+                titulo: item.title || 'Título não disponível',
+                descricao: descricaoLimpa || 'Descrição não disponível',
+                img: item["media:content"]?.$.url || 'Imagem não disponível',
+                data: item.pubDate || 'Data não disponível'
+            };
+        });
     } catch (error) {
         console.error('Erro ao atualizar as notícias:', error);
         noticiasCache = [];
